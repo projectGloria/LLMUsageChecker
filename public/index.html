@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI Usage Limits Monitor</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <!-- Ambient background glow elements -->
+  <div class="ambient-glow glow-1"></div>
+  <div class="ambient-glow glow-2"></div>
+  <div class="ambient-glow glow-3"></div>
+
+  <div class="app-layout">
+    <!-- Top Navigation Header -->
+    <header class="navbar">
+      <div class="nav-left">
+        <div class="app-brand">
+          <div class="brand-badge">
+            <svg class="brand-svg" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+              <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+            </svg>
+          </div>
+          <div class="brand-headings">
+            <div class="brand-title-row">
+              <h1>AI Usage Monitor</h1>
+              <span class="version-tag">v1.1</span>
+            </div>
+            <p class="brand-sub">Unified limit tracker for Claude Code, Codex & Antigravity</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="nav-right">
+        <!-- Live status & Sync -->
+        <div class="sync-pill" id="sync-pill">
+          <span class="live-dot"></span>
+          <span id="last-sync-label">Syncing...</span>
+        </div>
+
+        <div class="refresh-control-group">
+          <label for="auto-refresh-select" class="control-label">Interval:</label>
+          <div class="select-wrapper">
+            <select id="auto-refresh-select">
+              <option value="0">Manual only</option>
+              <option value="30">30 seconds</option>
+              <option value="60" selected>1 minute</option>
+              <option value="300">5 minutes</option>
+              <option value="900">15 minutes</option>
+            </select>
+          </div>
+        </div>
+
+        <button id="btn-refresh" class="btn btn-primary" title="Refresh all usage metrics from local CLI and APIs">
+          <svg id="refresh-icon" width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21.5 2v6h-6M2.5 22v-6h6M2 11.5a10 10 0 0 1 18.8-4.3M22 12.5a10 10 0 0 1-18.8 4.2"/>
+          </svg>
+          <span>Refresh</span>
+        </button>
+
+        <button id="btn-copy-summary" class="btn btn-secondary" title="Copy markdown usage summary to clipboard">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+            <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+          </svg>
+          <span class="hide-mobile">Copy Summary</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Overview Statistics Strip -->
+    <section class="overview-strip">
+      <div class="overview-stat-card">
+        <div class="stat-icon icon-antigravity">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+            <path d="M2 12h20"></path>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Google Antigravity</span>
+          <div class="stat-value-row">
+            <span class="stat-value" id="overview-agy-val">--</span>
+            <span class="stat-sublabel" id="overview-agy-sub">Gemini 5h</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-stat-card">
+        <div class="stat-icon icon-codex">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+            <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+            <line x1="12" y1="22.08" x2="12" y2="12"></line>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">ChatGPT Codex</span>
+          <div class="stat-value-row">
+            <span class="stat-value" id="overview-codex-val">--</span>
+            <span class="stat-sublabel" id="overview-codex-sub">Session 5h</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-stat-card">
+        <div class="stat-icon icon-claude">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+            <line x1="8" y1="21" x2="16" y2="21"></line>
+            <line x1="12" y1="17" x2="12" y2="21"></line>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Claude Code</span>
+          <div class="stat-value-row">
+            <span class="stat-value" id="overview-claude-val">--</span>
+            <span class="stat-sublabel" id="overview-claude-sub">Weekly Quota</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="overview-stat-card card-next-reset">
+        <div class="stat-icon icon-clock">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <circle cx="12" cy="12" r="10"></circle>
+            <polyline points="12 6 12 12 16 14"></polyline>
+          </svg>
+        </div>
+        <div class="stat-content">
+          <span class="stat-label">Next Refresh Event</span>
+          <div class="stat-value-row">
+            <span class="stat-value highlight-clock" id="overview-next-reset">Calculating...</span>
+            <span class="stat-sublabel" id="overview-next-target">--</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Main Grid Cards -->
+    <main class="cards-grid">
+      <!-- 1. Google Antigravity Card -->
+      <article class="provider-panel" id="panel-antigravity">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-avatar avatar-agy">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <circle cx="12" cy="12" r="10"></circle>
+                <path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20"></path>
+                <path d="M2 12h20"></path>
+              </svg>
+            </div>
+            <div>
+              <div class="panel-title-wrap">
+                <h2>Google Antigravity</h2>
+                <span class="status-badge badge-active" id="agy-badge">Active</span>
+              </div>
+              <span class="panel-subtitle">CLI Binary: <code>agy.exe</code></span>
+            </div>
+          </div>
+
+          <div class="panel-header-right">
+            <button class="btn-icon" onclick="launchTerminal('agy')" title="Open Antigravity in Terminal">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-body" id="agy-body">
+          <div class="skeleton-loader">
+            <div class="skeleton-line full"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          <button class="btn btn-terminal btn-full" onclick="launchTerminal('agy')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 17 10 11 4 5"></polyline>
+              <line x1="12" y1="19" x2="20" y2="19"></line>
+            </svg>
+            <span>Launch agy (/usage)</span>
+          </button>
+        </div>
+      </article>
+
+      <!-- 2. ChatGPT Codex Card -->
+      <article class="provider-panel" id="panel-codex">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-avatar avatar-codex">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
+                <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
+                <line x1="12" y1="22.08" x2="12" y2="12"></line>
+              </svg>
+            </div>
+            <div>
+              <div class="panel-title-wrap">
+                <h2>ChatGPT Codex</h2>
+                <span class="plan-pill" id="codex-plan-badge">PLUS</span>
+              </div>
+              <span class="panel-subtitle" id="codex-email-label">auth.json token</span>
+            </div>
+          </div>
+
+          <div class="panel-header-right">
+            <button class="btn-icon" onclick="launchTerminal('codex')" title="Open Codex CLI">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-body" id="codex-body">
+          <div class="skeleton-loader">
+            <div class="skeleton-line full"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+        </div>
+
+        <div class="panel-footer">
+          <button class="btn btn-terminal btn-full" onclick="launchTerminal('codex')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 17 10 11 4 5"></polyline>
+              <line x1="12" y1="19" x2="20" y2="19"></line>
+            </svg>
+            <span>Launch Codex CLI</span>
+          </button>
+        </div>
+      </article>
+
+      <!-- 3. Claude Code Card -->
+      <article class="provider-panel" id="panel-claude">
+        <div class="panel-header">
+          <div class="panel-header-left">
+            <div class="panel-avatar avatar-claude">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect>
+                <line x1="8" y1="21" x2="16" y2="21"></line>
+                <line x1="12" y1="17" x2="12" y2="21"></line>
+              </svg>
+            </div>
+            <div>
+              <div class="panel-title-wrap">
+                <h2>Claude Code</h2>
+                <span class="status-badge badge-warning" id="claude-badge">Signed Out</span>
+              </div>
+              <span class="panel-subtitle" id="claude-profile-label">~/.claude.json snapshot</span>
+            </div>
+          </div>
+
+          <div class="panel-header-right">
+            <button class="btn-icon" onclick="launchTerminal('claude')" title="Open Claude Code Terminal">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="4 17 10 11 4 5"></polyline>
+                <line x1="12" y1="19" x2="20" y2="19"></line>
+              </svg>
+            </button>
+          </div>
+        </div>
+
+        <div class="panel-body" id="claude-body">
+          <div class="skeleton-loader">
+            <div class="skeleton-line full"></div>
+            <div class="skeleton-card"></div>
+            <div class="skeleton-card"></div>
+          </div>
+        </div>
+
+        <div class="panel-footer panel-footer-split">
+          <button class="btn btn-terminal flex-1" onclick="launchTerminal('claude')">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="4 17 10 11 4 5"></polyline>
+              <line x1="12" y1="19" x2="20" y2="19"></line>
+            </svg>
+            <span>Launch Claude</span>
+          </button>
+          <button class="btn btn-cta" id="claude-login-btn" onclick="launchTerminal('claude-login')" title="Open terminal to login with claude auth login">
+            <span>Sign In</span>
+          </button>
+        </div>
+      </article>
+    </main>
+
+    <!-- Bottom Quick Launch Toolbar -->
+    <footer class="terminal-bar">
+      <div class="terminal-bar-left">
+        <div class="terminal-badge">CLI</div>
+        <span class="terminal-hint">
+          Instant Terminal Summary: run <code>node cli.js</code> or <code>npm run cli</code> in any shell
+        </span>
+      </div>
+
+      <div class="terminal-bar-right">
+        <span class="bar-label">Quick Terminals:</span>
+        <button class="btn btn-chip" onclick="launchTerminal('agy')">
+          <span class="chip-indicator color-agy"></span> Antigravity
+        </button>
+        <button class="btn btn-chip" onclick="launchTerminal('codex')">
+          <span class="chip-indicator color-codex"></span> Codex
+        </button>
+        <button class="btn btn-chip" onclick="launchTerminal('claude')">
+          <span class="chip-indicator color-claude"></span> Claude Code
+        </button>
+      </div>
+    </footer>
+  </div>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <script src="app.js"></script>
+</body>
+</html>

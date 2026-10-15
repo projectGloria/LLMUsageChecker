@@ -1,0 +1,21 @@
+{
+  "name": "ai-usage-checker",
+  "version": "1.0.0",
+  "description": "Desktop Dashboard and CLI tool to monitor usage limits for Google Antigravity, ChatGPT Codex, and Claude Code",
+  "main": "server.js",
+  "scripts": {
+    "start": "node launch.js",
+    "server": "node server.js",
+    "cli": "node cli.js"
+  },
+  "keywords": [
+    "antigravity",
+    "claude",
+    "codex",
+    "usage",
+    "limits",
+    "ai"
+  ],
+  "author": "",
+  "license": "MIT"
+}
