@@ -1,0 +1,65 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 920 540" width="100%" height="100%">
+  <defs>
+    <filter id="termShadow" x="-5%" y="-5%" width="110%" height="115%">
+      <feDropShadow dx="0" dy="20" stdDeviation="25" flood-color="#000000" flood-opacity="0.85" />
+      <feDropShadow dx="0" dy="2" stdDeviation="6" flood-color="#38bdf8" flood-opacity="0.15" />
+    </filter>
+  </defs>
+  <style>
+    .t-mono { font-family: 'JetBrains Mono', Consolas, monospace; font-size: 13px; }
+  </style>
+
+  <rect width="920" height="540" fill="#08090e" />
+
+  <g transform="translate(25, 20)" filter="url(#termShadow)">
+    <!-- Terminal Window Frame -->
+    <rect width="870" height="495" rx="10" fill="#0c1017" stroke="#1f293d" stroke-width="1.2" />
+
+    <!-- Terminal Header Bar -->
+    <rect width="870" height="34" rx="10" fill="#141a24" />
+    <rect y="22" width="870" height="12" fill="#141a24" />
+    <line x1="0" y1="34" x2="870" y2="34" stroke="#1f293d" stroke-width="1" />
+
+    <!-- Window Dots -->
+    <circle cx="20" cy="17" r="5" fill="#f43f5e" />
+    <circle cx="36" cy="17" r="5" fill="#f59e0b" />
+    <circle cx="52" cy="17" r="5" fill="#10b981" />
+    <text x="435" y="22" text-anchor="middle" font-family="'Plus Jakarta Sans', Segoe UI, sans-serif" font-size="12" fill="#64748b">PowerShell — node cli.js</text>
+
+    <!-- Terminal Output -->
+    <g transform="translate(24, 60)" class="t-mono">
+      <!-- Prompt Command -->
+      <text x="0" y="0" fill="#10b981">PS C:\Users\Developer\LLMUsageChecker&gt; <tspan fill="#ffffff">npm run cli</tspan></text>
+
+      <!-- Banner -->
+      <text x="0" y="30" fill="#38bdf8" font-weight="bold">====================================================</text>
+      <text x="0" y="50" fill="#ffffff" font-weight="bold">           ⚡ AI USAGE LIMITS MONITOR ⚡           </text>
+      <text x="0" y="70" fill="#38bdf8" font-weight="bold">====================================================</text>
+
+      <text x="0" y="100" fill="#64748b">Fetching live usage data from local binaries and sessions...</text>
+
+      <!-- Google Antigravity Section -->
+      <text x="0" y="130" fill="#38bdf8" font-weight="bold">▶ GOOGLE ANTIGRAVITY <tspan fill="#64748b" font-weight="normal">(via agy CLI)</tspan></text>
+      <text x="16" y="152" fill="#38bdf8">• Gemini Models</text>
+      <text x="32" y="174" fill="#cbd5e1">- Weekly Limit Remaining     <tspan fill="#10b981">[███░░░░░░░░░░░░░░░░░ 14.1% used (85.9% left)]</tspan>  Reset: <tspan fill="#38bdf8">in 6d 3h 35m</tspan></text>
+      <text x="32" y="196" fill="#cbd5e1">- Five Hour Limit Remaining  <tspan fill="#10b981">[████████░░░░░░░░░░░░ 38.1% used (61.9% left)]</tspan>  Reset: <tspan fill="#38bdf8">in 1h 8m</tspan></text>
+      <text x="16" y="218" fill="#818cf8">• Gemini 4 Argon</text>
+      <text x="32" y="240" fill="#cbd5e1">- Gemini 4 Argon Weekly      <tspan fill="#f59e0b">[███████████████░░░░░ 76.6% used (23.4% left)]</tspan>  Reset: <tspan fill="#38bdf8">in 5d 12h 25m</tspan></text>
+      <text x="16" y="262" fill="#a78bfa">• Claude and GPT models</text>
+      <text x="32" y="284" fill="#cbd5e1">- Five Hour Limit Remaining  <tspan fill="#10b981">[░░░░░░░░░░░░░░░░░░░░  0.0% used (100.0% left)]</tspan>  Reset: <tspan fill="#38bdf8">in 5h 0m</tspan></text>
+
+      <!-- ChatGPT Codex Section -->
+      <text x="0" y="316" fill="#10b981" font-weight="bold">▶ CHATGPT CODEX <tspan fill="#64748b" font-weight="normal">[Plan: PLUS]</tspan></text>
+      <text x="16" y="338" fill="#cbd5e1">- 5-Hour Session Limit         <tspan fill="#10b981">[░░░░░░░░░░░░░░░░░░░░  0.0% used (100.0% left)]</tspan>  Reset: <tspan fill="#38bdf8">in 4h 59m</tspan></text>
+      <text x="16" y="360" fill="#cbd5e1">- Weekly Limit (7 Days)        <tspan fill="#10b981">[░░░░░░░░░░░░░░░░░░░░  0.0% used (100.0% left)]</tspan>  Reset: <tspan fill="#38bdf8">in 6d 23h 59m</tspan></text>
+
+      <!-- Claude Code Section -->
+      <text x="0" y="392" fill="#f97316" font-weight="bold">▶ CLAUDE CODE <tspan fill="#64748b" font-weight="normal">[Plan: Pro / Subscription]</tspan></text>
+      <text x="16" y="414" fill="#10b981">✓ Claude CLI session authenticated (~/.claude.json)</text>
+
+      <!-- Bottom Hint -->
+      <text x="0" y="446" fill="#38bdf8" font-weight="bold">====================================================</text>
+      <text x="0" y="466" fill="#94a3b8">To launch the Standalone Desktop GUI: <tspan fill="#38bdf8">npm start</tspan></text>
+    </g>
+  </g>
+</svg>
