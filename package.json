@@ -1,6 +1,6 @@
 {
   "name": "ai-usage-checker",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Desktop Dashboard and CLI tool to monitor usage limits for Google Antigravity, ChatGPT Codex, and Claude Code",
   "main": "server.js",
   "scripts": {

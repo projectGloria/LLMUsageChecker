@@ -1,6 +1,6 @@
 id = "LLMUsageChecker"
 name = "LLMUsageChecker"
-version = "1.0.0"
+version = "1.0.1"
 main_exe = "LLMUsageChecker.exe"
 icon = "assets/icon.png"
 accent = "#a3e635"
