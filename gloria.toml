@@ -1,0 +1,9 @@
+id = "LLMUsageChecker"
+name = "LLMUsageChecker"
+version = "1.0.0"
+main_exe = "LLMUsageChecker.exe"
+icon = "assets/icon.png"
+accent = "#a3e635"
+description = "Real-time AI developer quota dashboard"
+needs_webview2 = false
+data_folders = []

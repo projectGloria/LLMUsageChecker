@@ -1,0 +1,59 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  setup:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build LLMUsageChecker.exe (Node single executable)
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          New-Item -ItemType Directory -Force build, app-dist | Out-Null
+          # server.js locates public/ through __dirname, so point it at the exe folder.
+          npx --yes esbuild@0.24.0 launch.js --bundle --platform=node --format=cjs `
+            "--banner:js=var __dirname = require('path').dirname(process.execPath);" `
+            --outfile=build/bundle.js
+          if ($LASTEXITCODE -ne 0) { throw 'esbuild failed' }
+          '{ "main": "build/bundle.js", "output": "build/sea.blob", "disableExperimentalSEAWarning": true }' | Set-Content build/sea-config.json
+          node --experimental-sea-config build/sea-config.json
+          if ($LASTEXITCODE -ne 0) { throw 'sea blob failed' }
+          Copy-Item (Get-Command node).Source app-dist/LLMUsageChecker.exe
+          npx --yes postject@1.0.0-alpha.6 app-dist/LLMUsageChecker.exe NODE_SEA_BLOB build/sea.blob `
+            --sentinel-fuse NODE_SEA_FUSE_fce680ab2cc467b6e072b8b5df1996b2
+          if ($LASTEXITCODE -ne 0) { throw 'postject failed' }
+          Copy-Item public app-dist/public -Recurse
+
+      - name: Make sure the release exists
+        if: github.ref_type == 'tag'
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          gh release view $env:TAG 2>$null
+          if ($LASTEXITCODE -ne 0) {
+            gh release create $env:TAG --generate-notes
+            if ($LASTEXITCODE -ne 0) { throw 'could not create the release' }
+          }
+
+      - uses: projectGloria/GloriaSetup@v0.1.0
+        with:
+          app-dir: app-dist
+          manifest: gloria.toml
+          certificate: ${{ secrets.WINDOWS_PFX_BASE64 }}
+          certificate-password: ${{ secrets.WINDOWS_PFX_PASSWORD }}
